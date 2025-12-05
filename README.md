@@ -34,9 +34,9 @@ The database adopted in this course is under the reference: "Enhancer Chromatin 
 
 - Scripts are still provided for all of these in the directory. <br />
 
-- This works the same way as submitting a script, but in one line and with qlogin (for AGE). <br />
+- This works the same way as submitting a script, but in one line and srun (for slurm) <br />
 
-`qlogin -l mfree=5G -pe threads 8`
+`srun -N 1 --ntasks 8 --mem 40gb --pty bash`
 - Now we will launch conda, which I installed on the server earlier<br>(commands for this are at the bottom of this page)<br />
 
 `source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate`
@@ -162,10 +162,7 @@ dos2unix *.bed
 
 `head SRR5063143_naive_H3K27ac_chromap.bed` <br />
 Should look like this:<br>
-- **chrm; start; end; N; q; strand**. <br />
-22 &nbsp; 10510250 &nbsp; 10510300 &nbsp; N &nbsp; 59 &nbsp; + <br /> 
-22 &nbsp; 10510252 &nbsp; 10510302 &nbsp; N &nbsp; 46 &nbsp; - <br /> 
-22 &nbsp; 10511600 &nbsp; 10511650 &nbsp; N &nbsp; 60 &nbsp; + <br /> 
+![Example of a correct bed file.](images/bedfile_example.png "Bedfile")
 
 ## 3) Post Map Processing 
 - Convert bed to bam *~2sec* <br /> 
@@ -235,9 +232,9 @@ conda activate basic_tools
 
 for SAMPLE_ID in `cat sample.txt`; do
 ##sort
-  samtools sort ${SAMPLE_ID}_chromap.bam -@ ${NSLOTS}  -o ${SAMPLE_ID}_chromap_sorted.bam
+  samtools sort ${SAMPLE_ID}_chromap.bam -@ ${SLURM_CPUS_ON_NODE}  -o ${SAMPLE_ID}_chromap_sorted.bam
 ##sort
-  samtools sort ${SAMPLE_ID}_chromap_sorted.bam -@ ${NSLOTS}  -o ${SAMPLE_ID}_treat.bam
+  samtools sort ${SAMPLE_ID}_chromap_sorted.bam -@ ${SLURM_CPUS_ON_NODE}  -o ${SAMPLE_ID}_treat.bam
 ##convert to bw
   samtools index ${SAMPLE_ID}_treat.bam
   conda activate deepTools
@@ -265,6 +262,9 @@ samtools idxstats ${sorted.bam.file} | cut -f1 | grep -v Mt | xargs samtools vie
 
 - To check the **BAM** files just unzip it using samtools and print the first five lines:
 `samtools view SRR5063143_naive_H3K27ac_treat.bam | head -n 5` <br />
+Should look like this:
+![Example of a correct BAM file.](images/BAM_example.png "BAM")
+
 
 - To check the **BigWig** files you will need a genome browser:
 - First download the *.bw files from the HPC to your personal PC *can use SCP or STFP* <br>
@@ -276,6 +276,11 @@ samtools idxstats ${sorted.bam.file} | cut -f1 | grep -v Mt | xargs samtools vie
 - Let's have fun!! check the **FBXO7** gene  <br />
   *https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000100225;r=22:32474676-32498829
   *chr22:32474676-32498829   <br />
+
+Should look like this:
+![Example of a correct BigWig file.](images/BW_example.png "BigWig")
+
+
 
 *General Advice: a really good fast way to check files is to check their size*<br>
 *For text based files, like peak files etc, you can count the number of lines to<br>
@@ -364,6 +369,9 @@ do
 mv ${peakfile} ${peakfile//\.narrowPeak/\.Peak}
 done
 
+#just to check how many peaks we got!
+wc -l *.Peak
+
 ```
 
 ## 6) QC Peaks (FRiP Scores) 
@@ -385,7 +393,7 @@ rm FRiP_Scores_Report.txt
 for peakfile in `ls *.Peak`; do
 #the command in the tickmarks this time lists every file that ends with .Peak
 
-readfile=${peakfile//_peaks.Peak/_sorted_chromap.bam}
+readfile=${peakfile//_peaks.Peak/_treat.bam}
 #this line calls the variable $peakfile you just made, finds _peaks.Peak within it,
     #and replaces it with _chromap_sorted.bam,
     #which are the reads that made up the peak file.
@@ -435,12 +443,12 @@ mkdir -p deepTools_graphs/
 source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
 conda activate deepTools
 
-multiBigwigSummary bins -b *norm.bw -o bw_corr.npz -p ${NSLOTS}
+multiBigwigSummary bins -b *norm.bw -o bw_corr.npz -p ${SLURM_CPUS_ON_NODE}
 #the above command takes all the bigwigs listed after -b separated by a space (automatically done here
     #with the *norm.bw), splits them into bins, figures out the pairwise correlations for each bin for each bigwig
     #averages the correlation among all the bin pairwise comparisons for each bigwig (so you get one correlation
     #value for each bigwig to bigwig comparison) and stores that in the output matrix.
-    #-p ${NSLOTS} is for the number of parallel threads available to speed this calculation up.
+    #-p ${SLURM_CPUS_ON_NODE} is for the number of parallel threads available to speed this calculation up.
 
 plotCorrelation -in bw_corr.npz -c spearman -p heatmap --plotNumbers -o deepTools_graphs/correlation_heatmap.pdf
 #plotCorrelation -in bw_corr.npz -c spearman -p scatterplot -o deepTools_graphs/correlation_scatterplot.pdf
@@ -449,6 +457,11 @@ plotCorrelation -in bw_corr.npz -c spearman -p heatmap --plotNumbers -o deepTool
 #the commented out scatterplot also works and essentially plots the same thing, but I find it less useful.
 
 ```
+It should look something like this once you download and open it:
+![Example of a correct Corr_map file.](images/Corr_Heatmap.png "Correlation Heatmap")
+
+
+
 Now to visualize the peak files
 
 ```bash
@@ -483,7 +496,7 @@ peakfile=${file1//_treat.bam/_peaks\.Peak}
 bw_file=$(echo ${file1//\.bam/_differential}.bw)
 #these just set vairables to point to relevant files for ease and readability
 
-computeMatrix scale-regions -p ${NSLOTS} -S ${bw_file} -R ${peakfile} -b 3000 -a 3000 \
+computeMatrix scale-regions -p ${SLURM_CPUS_ON_NODE} -S ${bw_file} -R ${peakfile} -b 3000 -a 3000 \
         -o consensus_matrixes/${peakfile//_peaks\.Peak/\.matrix}
 #this takes one or more bigwig files and one or more bed files, and essentially stakcs and scales the bed file regions horizontally
     #so they all appear the same size
@@ -491,7 +504,7 @@ computeMatrix scale-regions -p ${NSLOTS} -S ${bw_file} -R ${peakfile} -b 3000 -a
     #the -b 3000 command tells computeMatrix to expand the bed regions upstream by 3000 bp,
     #the -a does the same thing but downstream of the bed region.
     #-o determines the output as usual.
-    #one note: this script is VERY slow if not paralellized, so make sure to include a -p ${NSLOTS} argument.
+    #one note: this script is VERY slow if not paralellized, so make sure to include a -p ${SLURM_CPUS_ON_NODE} argument.
 
 plotHeatmap -m consensus_matrixes/${peakfile//_peaks\.Peak/\.matrix} -o deepTools_graphs/${peakfile//_peaks\.Peak/\.pdf} \
         --dpi 300 --startLabel "Peak Start" --endLabel "Peak End" -x "Distance" --heatmapWidth 12 --regionsLabel "Peaks"
@@ -503,6 +516,10 @@ plotHeatmap -m consensus_matrixes/${peakfile//_peaks\.Peak/\.matrix} -o deepTool
 done
 
 ```
+It should look something like this once you download and open it:
+![Example of a correct single sample heatmap file.](images/Single_Sample_deepTools_Heatmap.png "Single Sample Heatmap")
+
+
 
 ## 8) Bedtools! <br />
 
@@ -529,6 +546,7 @@ bedtools intersect -v -b SRR5063143_naive_H3K27ac_peaks.Peak -a SRR5063149_naive
 #file you need to direct the output to a file like the following command:
 
 bedtools intersect -a SRR5063143_naive_H3K27ac_peaks.Peak -b SRR5063149_naive_H3K4me3_peaks.Peak > regions_in_H3K27ac_and_NOT_in_H3K4me3.bed
+head 
 
 ```
 
@@ -591,7 +609,7 @@ conda activate macs3
 conda install -y -c bioconda -c conda-forge macs3
 conda create --yes --name basic_tools
 conda activate basic_tools
-conda install -y -c bioconda bedtools samtools seqkit dos2unix
+conda install -y -c bioconda bedtools samtools=1.9 seqkit dos2unix
 conda create --yes --name sra_tools
 conda activate sra_tools
 conda install -y -c bioconda sra-tools seqtk
