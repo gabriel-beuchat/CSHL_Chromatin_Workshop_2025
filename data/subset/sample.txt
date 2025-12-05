@@ -1,0 +1,6 @@
+SRR5063143_naive_H3K27ac
+SRR5063144_naive_H3K27ac
+SRR5063149_naive_H3K4me3
+SRR5063150_naive_H3K4me3
+SRR5063153_naive_input
+SRR5063154_naive_input
