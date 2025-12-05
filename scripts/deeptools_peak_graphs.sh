@@ -13,7 +13,8 @@
 ################################################################
 
 
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 dir=${datadir}/data/subset
 
 cd ${dir}
@@ -42,7 +43,7 @@ peakfile=${file1//_treat.bam/_peaks\.Peak}
 bw_file=$(echo ${file1//\.bam/_differential}.bw)
 #these just set vairables to point to relevant files for ease and readability
 
-computeMatrix scale-regions -p ${NSLOTS} -S ${bw_file} -R ${peakfile} -b 3000 -a 3000 \
+computeMatrix scale-regions -p ${SLURM_CPUS_ON_NODE} -S ${bw_file} -R ${peakfile} -b 3000 -a 3000 \
         -o consensus_matrixes/${peakfile//_peaks\.Peak/\.matrix}
 #this takes one or more bigwig files and one or more bed files, and essentially stakcs and scales the bed file regions horizontally
     #so they all appear the same size
@@ -50,7 +51,7 @@ computeMatrix scale-regions -p ${NSLOTS} -S ${bw_file} -R ${peakfile} -b 3000 -a
     #the -b 3000 command tells computeMatrix to expand the bed regions upstream by 3000 bp,
     #the -a does the same thing but downstream of the bed region.
     #-o determines the output as usual.
-    #one note: this script is VERY slow if not paralellized, so make sure to include a -p ${NSLOTS} argument.
+    #one note: this script is VERY slow if not paralellized, so make sure to include a -p ${SLURM_CPUS_ON_NODE} argument.
 
 plotHeatmap -m consensus_matrixes/${peakfile//_peaks\.Peak/\.matrix} -o deeptools_graphs/${peakfile//_peaks\.Peak/\.pdf} \
         --dpi 300 --startLabel "Peak Start" --endLabel "Peak End" -x "Distance" --heatmapWidth 12 --regionsLabel "Peaks"

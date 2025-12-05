@@ -1,24 +1,16 @@
 #!/bin/bash
-#$ -l mfree=5G
-#$ -pe threads 8
-#$ -l h_rt=100:00:00
-#$ -cwd
+#SBATCH -p cpuq
+#SBATCH --job-name=to_bams
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=5G
+#SBATCH --time=12:00:00
+#SBATCH --output=to_bams.%j.out
+#SBATCH --error=to_bams.%j.err
 
-#what the above commands are doing:
-#first line is shebang, it tells the environment to read this as a shell script
-#second line requests resources (-l) of 5G PER CORE
-#third line requests the processing environment (-pe) to be 8 threads.
-    #this will vary between institution. At my home institution, for example, the syntax is '-pe serial 8'
-    #memory is counted per core, so in this case the job is requesting 40G total for use by 8 cores.
-#the fourth line is asking to be allowed to use 100 hours for this job. Depending on your institution you will have
-    #different requirements for declaring the time it will run. If the job finshes early it will terminate, so this
-    #actually just means a time at which the job will be unceremoniously killed if it is still running.
-#the fifth line is saying to run in the "current working environment" which is handy to include because it means the
-#error logs will automatically be output into the directory you are in, and it will also load whatever gets loaded on
-#your directory when you launch it (like if you have conda launch on startup for example).
+#my home institution does not use slurm, it uses grid engine, so I copied the above directly from
+#the scripts by Lauren Mills
 
-#####################################################################################################################
-#The things above this line are an AGE header for submitting the job with qsub.
+################################################################
 
 source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
 cd ~/CSHL_Chromatin_Workshop_2025/data/subset/

@@ -16,7 +16,8 @@
 source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
 conda activate sra_tools
 
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 cd ${datadir}
 
 for SAMPLE_ID in `cat sra.txt`; do

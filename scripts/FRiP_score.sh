@@ -22,7 +22,7 @@ rm FRiP_Scores_Report.txt
 for peakfile in `ls *.Peak`; do
 #the command in the tickmarks this time lists every file that ends with .Peak
 
-readfile=${peakfile//_peaks.Peak/_sorted_chromap.bam}
+readfile=${peakfile//_peaks.Peak/_treat.bam}
 #this line calls the variable $peakfile you just made, finds _peaks.Peak within it,
     #and replaces it with _chromap_sorted.bam,
     #which are the reads that made up the peak file.

@@ -13,7 +13,8 @@
 ################################################################
 
 
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 dir=${datadir}/data/subset
 
 cd ${dir}
@@ -23,12 +24,12 @@ mkdir -p deeptools_graphs/
 source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
 conda activate deepTools
 
-multiBigwigSummary bins -b *norm.bw -o bw_corr.npz -p ${NSLOTS}
+multiBigwigSummary bins -b *norm.bw -o bw_corr.npz -p ${SLURM_CPUS_ON_NODE}
 #the above command takes all the bigwigs listed after -b separated by a space (automatically done here
     #with the *norm.bw), splits them into bins, figures out the pairwise correlations for each bin for each bigwig
     #averages the correlation among all the bin pairwise comparisons for each bigwig (so you get one correlation
     #value for each bigwig to bigwig comparison) and stores that in the output matrix.
-    #-p ${NSLOTS} is for the number of parallel threads available to speed this calculation up.
+    #-p ${SLURM_CPUS_ON_NODE} is for the number of parallel threads available to speed this calculation up.
 
 plotCorrelation -in bw_corr.npz -c spearman -p heatmap --plotNumbers -o deeptools_graphs/correlation_heatmap.pdf
 #plotCorrelation -in bw_corr.npz -c spearman -p scatterplot -o deeptools_graphs/correlation_scatterplot.pdf

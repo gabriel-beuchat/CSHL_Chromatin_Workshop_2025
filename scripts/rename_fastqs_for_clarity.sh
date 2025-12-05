@@ -17,7 +17,8 @@
 #of the sample.txt file
 #it also creates and moves them into a data folder to keep things neat.
 
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 cd ${datadir}
 
 mkdir -p data/

@@ -13,7 +13,8 @@
 ################################################################
 
 #THESE ARE INCOMPLETE PATHS, YOU NEED TO ADD TO THEIR BEGINNING
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 dir=${datadir}/data/subset
 genome=${datadir}/genome/hg38_chr22.fa #genome
 index=${datadir}/genome/index #index

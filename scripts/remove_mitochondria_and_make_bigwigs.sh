@@ -12,7 +12,8 @@
 
 ################################################################
 
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 dir=${datadir}/data/subset
 genome=${datadir}/genome/hg38_chr22.fa #genome
 index=${datadir}/genome/index #index
@@ -29,12 +30,12 @@ for SAMPLE_ID in `cat sample.txt`; do
 #sorting is really important and you will do it many times in the same pipeline usually. A lot of the programs
     #we use expect files to be sorted and break when they are not sorted. Thefore, depending on the file type,
     #bedtools sort or samtools sort for bed files and sam/bam files, respectively, will be very handy.
-  samtools sort ${SAMPLE_ID}_chromap.bam -@ ${NSLOTS}  -o ${SAMPLE_ID}_chromap_sorted.bam
+  samtools sort ${SAMPLE_ID}_chromap.bam -@ ${SLURM_CPUS_ON_NODE}  -o ${SAMPLE_ID}_chromap_sorted.bam
 #the -@ flag tells samtools how many threads are available for parallelization.
     #many but not all programs will be able to do this (famously, bedtools does not)
     #the only way to know, and to know which flag to use to provide them with the number of cores,
     #is to google it.
-    #the ${NSLOTS} variable is AGE specific, and it is a variable that is automatically created when you submit a job
+    #the ${SLURM_CPUS_ON_NODE} variable is AGE specific, and it is a variable that is automatically created when you submit a job
     #and holds the number of processors available to you based on what you requested.
 
 #filtering out mitochondrial reads
@@ -59,7 +60,7 @@ for SAMPLE_ID in `cat sample.txt`; do
 
 
 ##sort
-  samtools sort ${SAMPLE_ID}_chromap_sorted.bam -@ ${NSLOTS}  -o ${SAMPLE_ID}_treat.bam
+  samtools sort ${SAMPLE_ID}_chromap_sorted.bam -@ ${SLURM_CPUS_ON_NODE}  -o ${SAMPLE_ID}_treat.bam
 ##convert to bw
   samtools index ${SAMPLE_ID}_treat.bam
   conda activate deepTools

@@ -14,7 +14,8 @@
 ##select random fastq - subsample
 ##############################################################
 
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 cd ${datadir}
 
 ##
