@@ -128,7 +128,8 @@ Chromap will do three things for us:
 
 ```bash
 #THESE ARE NOT ABSOLUTE PATHS YOU NEED TO ADD TO THEM
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 dir="${datadir}/data/subset"
 genome=${datadir}/genome/hg38_chr22.fa #genome
 index=${datadir}/genome/index #index
@@ -179,7 +180,8 @@ These commands will complain in this context that samtools needs version informa
 Although this is true it will still generate the sizes.genome file we are looking for.
 
 ```bash
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 cd ${datadir}/genome
 conda activate basic_tools
 samtools faidx hg38_chr22.fa
@@ -191,7 +193,8 @@ cat sizes.genome
 Now you can actually convert to the bam files for peak calling.
 ```bash
 #THESE ARE INCOMPLETE PATHS, YOU NEED TO ADD TO THEIR BEGINNING
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 dir=${datadir}/data/subset
 genome=${datadir}/genome/hg38_chr22.fa #genome
 index=${datadir}/genome/index #index
@@ -217,7 +220,8 @@ done
 
 - Sort **.bam**, generate indexes **.bai**, & generate **.bw** *(BigWigs)* *~3min*  <br />
 ```bash
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 dir=${datadir}/data/subset
 genome=${datadir}/genome/hg38_chr22.fa #genome
 index=${datadir}/genome/index #index
@@ -420,7 +424,8 @@ The second type of plot is a heatmap of the signal strength centered on our peak
 which lets us see the shape of our peaks and how consistent the signal is across the genome.
 
 ```bash
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 dir=${datadir}/data/subset
 
 cd ${dir}
@@ -448,7 +453,8 @@ Now to visualize the peak files
 
 ```bash
 
-datadir="~/CSHL_Chromatin_Workshop_2025"
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
 dir=${datadir}/data/subset
 
 cd ${dir}
@@ -576,7 +582,7 @@ conda install -c bioconda deepTools
 
 conda create --yes --name multiqc
 conda activate fastqc multiqc
-conda install -y -c bioconda multiqc
+conda install -y -c bioconda -c conda-forge multiqc fastqc
 conda create --yes --name chromap
 conda activate chromap
 conda install -y -c bioconda chromap
