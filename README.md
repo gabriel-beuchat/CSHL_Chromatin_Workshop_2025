@@ -135,7 +135,7 @@ genome=${datadir}/genome/hg38_chr22.fa #genome
 index=${datadir}/genome/index #index
 list=${datadir}/data/subset/sample.txt
 
-source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
+#source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
 conda activate chromap
 
 cd $dir
@@ -300,7 +300,17 @@ Should look like this:
 
 
 ```bash
-source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
+dir=${datadir}/data/subset
+genome=${datadir}/genome/hg38_chr22.fa #genome
+index=${datadir}/genome/index #index
+list=${datadir}/data/subset/sample.txt
+size=${datadir}/genome/sizes.genome #size of chrm
+##
+cd $dir
+
+#source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
 conda activate macs3
 
 input_combinations_broad=(
@@ -383,6 +393,15 @@ wc -l *.Peak
 - You will need: **BAM** files & **Peaks (BED)** files. <br />
 
 ```bash
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
+dir=${datadir}/data/subset
+genome=${datadir}/genome/hg38_chr22.fa #genome
+index=${datadir}/genome/index #index
+list=${datadir}/data/subset/sample.txt
+size=${datadir}/genome/sizes.genome #size of chrm
+##
+cd $dir
 
 conda activate basic_tools
 
@@ -440,7 +459,7 @@ cd ${dir}
 mkdir -p consensus_matrixes/
 mkdir -p deepTools_graphs/
 
-source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
+#source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
 conda activate deepTools
 
 multiBigwigSummary bins -b *norm.bw -o bw_corr.npz -p ${SLURM_CPUS_ON_NODE}
@@ -475,7 +494,7 @@ cd ${dir}
 mkdir -p consensus_matrixes/
 mkdir -p deepTools_graphs/
 
-source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
+#source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
 conda activate deepTools
 
 input_combinations=(
@@ -528,7 +547,16 @@ More quantitative methods are available, such as through diffbind. <br />
 However, presence/absence is still great to get a good idea about your data. <br />
 
 ```bash
-source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
+cd ~/CSHL_Chromatin_Workshop_2025
+datadir=$(pwd)
+dir=${datadir}/data/subset
+genome=${datadir}/genome/hg38_chr22.fa #genome
+index=${datadir}/genome/index #index
+list=${datadir}/data/subset/sample.txt
+size=${datadir}/genome/sizes.genome #size of chrm
+##
+cd $dir
+#source /grid/genomicscourse/home/shared/conda_2025/miniconda3/bin/activate
 conda activate basic_tools
 #how many peaks do we have?
 wc -l SRR5063143_naive_H3K27ac_peaks.Peak
@@ -546,7 +574,7 @@ bedtools intersect -v -b SRR5063143_naive_H3K27ac_peaks.Peak -a SRR5063149_naive
 #file you need to direct the output to a file like the following command:
 
 bedtools intersect -a SRR5063143_naive_H3K27ac_peaks.Peak -b SRR5063149_naive_H3K4me3_peaks.Peak > regions_in_H3K27ac_and_NOT_in_H3K4me3.bed
-head 
+head regions_in_H3K27ac_and_NOT_in_H3K4me3.bed
 
 ```
 
