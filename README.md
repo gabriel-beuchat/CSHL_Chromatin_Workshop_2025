@@ -685,6 +685,11 @@ plotHeatmap -m consensus_matrixes/Concat_Merged_Peaks.matrix -o deepTools_graphs
 
 ```
 
+Here is what the full heatmap should look like. Notice how because we did not sort the peaks you can see rough sort of clusters based on which treatment group the peak originally came from. This is a good organic way to visualize major differences.
+
+![Example of a correct concat double sample heatmap file.](images/Concat_deepTools_Heatmap.png "Concat Double Heatmap")
+
+
 
 ## 10) Setting Up Conda: <br />
 
